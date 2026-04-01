@@ -314,6 +314,66 @@
   .footer-links a { font-size: 12px; color: var(--text-sub); text-decoration: none; transition: color 0.15s; }
   .footer-links a:hover { color: var(--text-muted); }
   .footer-copy { font-size: 12px; color: var(--text-sub); }
+
+  /* ── RESPONSIVO ── */
+  @media (max-width: 768px) {
+    /* Nav */
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    .btn-nav-ghost { display: none; }
+
+    /* Hero */
+    .hero { padding: 48px 20px 0; }
+    .hero-layout { grid-template-columns: 1fr; }
+    .hero-cards-left,
+    .hero-cards-right { display: none; }
+    .hero h1 { font-size: 38px; letter-spacing: -1px; }
+    .hero-sub { font-size: 15px; }
+    .hero-cta { flex-direction: column; align-items: stretch; }
+    .btn-primary, .btn-ghost { text-align: center; justify-content: center; }
+
+    /* Stats */
+    .stats-bar { flex-wrap: wrap; }
+    .stat-item { flex: 1 1 calc(50% - 1px); max-width: none; border-right: none; border-bottom: 1px solid var(--border); }
+    .stat-item:nth-child(odd) { border-right: 1px solid var(--border); }
+    .stat-item:last-child { border-bottom: none; }
+
+    /* Sections */
+    .section { padding: 56px 20px; }
+
+    /* Features */
+    .features-grid { grid-template-columns: 1fr; }
+    .feature-card.span-2 { grid-column: span 1; }
+
+    /* Consultores */
+    .steps { grid-template-columns: 1fr; gap: 28px; }
+
+    /* Pricing */
+    .plans-grid { grid-template-columns: 1fr; max-width: 420px; }
+
+    /* CTA */
+    .cta-section { padding: 64px 20px; }
+    .cta-section h2 { font-size: 32px; }
+
+    /* Footer */
+    footer { padding: 24px 20px; flex-direction: column; gap: 16px; text-align: center; }
+    .footer-links { flex-wrap: wrap; justify-content: center; }
+  }
+
+  @media (max-width: 480px) {
+    .hero h1 { font-size: 32px; }
+    .stat-num { font-size: 24px; }
+    .section-title { font-size: 28px; }
+    .plans-grid { max-width: 100%; }
+  }
+
+  /* Consultores grid inline — 4 col → 2 col → 1 col */
+  @media (max-width: 768px) {
+    [style*="grid-template-columns:repeat(4"] { grid-template-columns: repeat(2, 1fr) !important; }
+  }
+  @media (max-width: 480px) {
+    [style*="grid-template-columns:repeat(4"] { grid-template-columns: 1fr !important; }
+  }
 </style>
 </head>
 <body>
@@ -436,7 +496,7 @@
   <div class="stat-item"><div class="stat-num">15+</div><div class="stat-label">Calculadoras juridicas</div></div>
   <div class="stat-item"><div class="stat-num">12</div><div class="stat-label">Tipos de consulta</div></div>
   <div class="stat-item"><div class="stat-num">98%</div><div class="stat-label">Satisfacao dos usuarios</div></div>
-  <div class="stat-item"><div class="stat-num">&lt;2s</div><div class="stat-label">Tempo de resposta</div></div>
+  <div class="stat-item"><div class="stat-num">24h</div><div class="stat-label">Consultores jurídicos</div></div>
 </div>
 
 <!-- SOCIAL PROOF -->
