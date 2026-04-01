@@ -316,6 +316,14 @@
   .footer-links a:hover { color: var(--text-muted); }
   .footer-copy { font-size: 12px; color: var(--text-sub); }
 
+  /* ── ACORDEÃO CALCULADORAS ── */
+  .calc-toggle { display: flex; align-items: center; justify-content: space-between; width: 100%; background: none; border: none; cursor: pointer; padding: 0; font-size: 13px; font-weight: 500; color: var(--text-muted); }
+  .calc-toggle svg { width: 13px; height: 13px; stroke: var(--text-sub); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s; flex-shrink: 0; }
+  .calc-toggle.open svg { transform: rotate(180deg); }
+  .calc-list { display: none; margin-top: 8px; padding-left: 24px; display: flex; flex-direction: column; gap: 4px; overflow: hidden; max-height: 0; transition: max-height 0.25s ease; }
+  .calc-list.open { max-height: 400px; }
+  .calc-list span { font-size: 11px; color: var(--text-sub); line-height: 1.4; }
+
   /* ── RESPONSIVO ── */
   @media (max-width: 768px) {
     /* Nav */
@@ -684,9 +692,108 @@
     <p class="section-sub">Ciclos nunca expiram. Pague por uso, nao por assento.</p>
   </div>
   <div class="plans-grid">
-    <div class="plan"><div class="plan-tier">essencial</div><div class="plan-price-row"><span class="plan-price">R$67</span><span class="plan-period">,90/mes</span></div><div class="plan-cycles">48 ciclos / mes</div><div class="plan-sep"></div><ul class="plan-features"><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Central de Consultas</li><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Calculadoras juridicas</li><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>IARA — IA juridica</li><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Gestao de clientes</li></ul><a href="https://buy.stripe.com/4gM5kDegb3K35DrbwtcAo00" target="_blank" rel="noopener noreferrer" class="plan-cta">Assinar Essencial</a></div>
-    <div class="plan highlight"><div class="plan-badge">Mais popular</div><div class="plan-tier">profissional</div><div class="plan-price-row"><span class="plan-price">R$97</span><span class="plan-period">,90/mes</span></div><div class="plan-cycles">80 ciclos / mes</div><div class="plan-sep"></div><ul class="plan-features"><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Tudo do Essencial</li><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>CicloVoice</li><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Jurisprudencia avancada</li><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>PDF profissional</li></ul><a href="https://buy.stripe.com/8x28wPgojfsL0j77gdcAo01" target="_blank" rel="noopener noreferrer" class="plan-cta primary">Assinar Profissional</a></div>
-    <div class="plan"><div class="plan-tier">escritorio</div><div class="plan-price-row"><span class="plan-price">R$197</span><span class="plan-period">,90/mes</span></div><div class="plan-cycles">140 ciclos / mes</div><div class="plan-sep"></div><ul class="plan-features"><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Tudo do Profissional</li><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Multiplos usuarios</li><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Relatorios e analytics</li><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Suporte prioritario</li></ul><a href="https://buy.stripe.com/dRm5kDfkf3K30j7gQNcAo02" target="_blank" rel="noopener noreferrer" class="plan-cta">Assinar Escritório</a></div>
+
+    <!-- ESSENCIAL -->
+    <div class="plan">
+      <div class="plan-tier">essencial</div>
+      <div class="plan-price-row"><span class="plan-price">R$67</span><span class="plan-period">,90/mês</span></div>
+      <div class="plan-cycles">48 ciclos / mês</div>
+      <div class="plan-sep"></div>
+      <ul class="plan-features">
+        <li>
+          <span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>
+          <div style="flex:1;">
+            <button class="calc-toggle" onclick="toggleCalc(this)">
+              30 cálculos jurídicos/mês
+              <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="calc-list">
+              <span>Rescisão sem justa causa</span>
+              <span>Rescisão por justa causa</span>
+              <span>Pensão alimentícia</span>
+              <span>Pensão por morte</span>
+              <span>Horas extras</span>
+              <span>Juros abusivos</span>
+              <span>Juros e correção monetária</span>
+              <span>Aluguel em atraso</span>
+              <span>Revisão de aluguel</span>
+              <span>Busca e apreensão</span>
+              <span>Distrato</span>
+              <span>Quitação de veículo</span>
+              <span>Restituição em dobro</span>
+              <span>Revisão contratual</span>
+              <span>Previdenciária</span>
+            </div>
+          </div>
+        </li>
+        <li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Gestão de clientes e casos</li>
+        <li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Emissão de honorários</li>
+        <li style="opacity:0.4;"><span class="check-icon"><svg viewBox="0 0 14 14"><line x1="2" y1="7" x2="12" y2="7"/></svg></span>Central de Consultas</li>
+        <li style="opacity:0.4;"><span class="check-icon"><svg viewBox="0 0 14 14"><line x1="2" y1="7" x2="12" y2="7"/></svg></span>CicloVoice</li>
+        <li style="opacity:0.4;"><span class="check-icon"><svg viewBox="0 0 14 14"><line x1="2" y1="7" x2="12" y2="7"/></svg></span>Aurora e agentes de IA</li>
+      </ul>
+      <a href="https://buy.stripe.com/4gM5kDegb3K35DrbwtcAo00" target="_blank" rel="noopener noreferrer" class="plan-cta">Assinar Essencial</a>
+    </div>
+
+    <!-- PROFISSIONAL -->
+    <div class="plan highlight">
+      <div class="plan-badge">Mais popular</div>
+      <div class="plan-tier">profissional</div>
+      <div class="plan-price-row"><span class="plan-price">R$97</span><span class="plan-period">,90/mês</span></div>
+      <div class="plan-cycles">80 ciclos / mês</div>
+      <div class="plan-sep"></div>
+      <ul class="plan-features">
+        <li>
+          <span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>
+          <div style="flex:1;">
+            <button class="calc-toggle" onclick="toggleCalc(this)">
+              Cálculos ilimitados
+              <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="calc-list">
+              <span>Rescisão sem justa causa</span>
+              <span>Rescisão por justa causa</span>
+              <span>Pensão alimentícia</span>
+              <span>Pensão por morte</span>
+              <span>Horas extras</span>
+              <span>Juros abusivos</span>
+              <span>Juros e correção monetária</span>
+              <span>Aluguel em atraso</span>
+              <span>Revisão de aluguel</span>
+              <span>Busca e apreensão</span>
+              <span>Distrato</span>
+              <span>Quitação de veículo</span>
+              <span>Restituição em dobro</span>
+              <span>Revisão contratual</span>
+              <span>Previdenciária</span>
+            </div>
+          </div>
+        </li>
+        <li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Gestão de clientes e casos</li>
+        <li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Central de Consultas <span style="font-size:10px;color:var(--primary);font-weight:600;">ciclos</span></li>
+        <li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>CicloVoice — transcrição <span style="font-size:10px;color:var(--primary);font-weight:600;">ciclos</span></li>
+        <li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Aurora e consultores 24h <span style="font-size:10px;color:var(--primary);font-weight:600;">ciclos</span></li>
+        <li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>PDF profissional</li>
+      </ul>
+      <a href="https://buy.stripe.com/8x28wPgojfsL0j77gdcAo01" target="_blank" rel="noopener noreferrer" class="plan-cta primary">Assinar Profissional</a>
+    </div>
+
+    <!-- ESCRITÓRIO -->
+    <div class="plan">
+      <div class="plan-tier">escritório</div>
+      <div class="plan-price-row"><span class="plan-price">R$197</span><span class="plan-period">,90/mês</span></div>
+      <div class="plan-cycles">140 ciclos / mês</div>
+      <div class="plan-sep"></div>
+      <ul class="plan-features">
+        <li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Tudo do Profissional</li>
+        <li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Múltiplos usuários</li>
+        <li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Agentes especializados <span style="font-size:10px;color:var(--primary);font-weight:600;">ciclos</span></li>
+        <li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Dashboard financeiro</li>
+        <li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Suporte prioritário</li>
+      </ul>
+      <a href="https://buy.stripe.com/dRm5kDfkf3K30j7gQNcAo02" target="_blank" rel="noopener noreferrer" class="plan-cta">Assinar Escritório</a>
+    </div>
+
   </div>
 </section>
 
@@ -712,5 +819,13 @@
   <p class="footer-copy">2026 CicloJus. Todos os direitos reservados.</p>
 </footer>
 
+<script>
+function toggleCalc(btn) {
+  const list = btn.nextElementSibling;
+  const isOpen = list.classList.contains('open');
+  btn.classList.toggle('open', !isOpen);
+  list.classList.toggle('open', !isOpen);
+}
+</script>
 </body>
 </html>
