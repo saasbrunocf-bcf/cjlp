@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CicloJus — Plataforma jurídica com IA</title>
+<meta name="description" content="Consultas automáticas, calculadoras jurídicas, transcrição de reuniões e IA especializada para advogados.">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #2D7D8A; --primary-light: #6EC6C6;
+    --primary-bg: #EEF8F8; --primary-bg-2: #D6F0F0;
+    --bg: #FFFFFF; --bg-2: #F7FAFB; --bg-3: #EFF3F5;
+    --border: #E2EAF0; --border-strong: #C4D4DE;
+    --text: #0F1F2E; --text-muted: #4A6070; --text-sub: #8FA3B0;
+    --gradient: linear-gradient(135deg, #2D7D8A 0%, #6EC6C6 100%);
+    --radius: 12px; --radius-sm: 8px;
+    --shadow-sm: 0 1px 4px rgba(15,31,46,0.06), 0 1px 2px rgba(15,31,46,0.04);
+    --shadow-md: 0 4px 20px rgba(15,31,46,0.09), 0 1px 4px rgba(15,31,46,0.04);
+    --shadow-lg: 0 8px 32px rgba(15,31,46,0.12);
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+
+  /* ── NAV ── */
+  nav { position: sticky; top: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between; padding: 0 64px; height: 64px; background: rgba(255,255,255,0.92); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .logo-mark { width: 32px; height: 32px; border-radius: 8px; background: var(--gradient); display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(45,125,138,0.3); position: relative; overflow: hidden; }
+  .logo-mark::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.25) 50%, transparent 60%); animation: shimmer 3s infinite; }
+  @keyframes shimmer { 0%,100%{transform:translateX(-100%) translateY(-100%)} 50%{transform:translateX(50%) translateY(50%)} }
+  .logo-mark svg { width: 17px; height: 17px; position: relative; z-index: 1; }
+  .logo-text { font-size: 15px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
+  .nav-links { display: flex; align-items: center; gap: 32px; }
+  .nav-links a { font-size: 13px; font-weight: 500; color: var(--text-muted); text-decoration: none; transition: color 0.15s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-actions { display: flex; align-items: center; gap: 10px; }
+  .btn-nav-ghost { font-size: 13px; font-weight: 600; color: var(--text-muted); background: transparent; border: 1px solid var(--border); cursor: pointer; padding: 7px 14px; border-radius: var(--radius-sm); transition: all 0.15s; text-decoration: none; }
+  .btn-nav-ghost:hover { color: var(--text); border-color: var(--border-strong); }
+  .btn-nav-primary { font-size: 13px; font-weight: 700; color: #fff; background: var(--gradient); border: none; cursor: pointer; padding: 8px 18px; border-radius: var(--radius-sm); box-shadow: 0 2px 8px rgba(45,125,138,0.3); transition: opacity 0.15s; text-decoration: none; }
+  .btn-nav-primary:hover { opacity: 0.9; }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    padding: 72px 40px 0; overflow: hidden;
+    background: linear-gradient(180deg, #EEF8F9 0%, #FFFFFF 70%);
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-layout {
+    display: grid;
+    grid-template-columns: 220px 1fr 220px;
+    gap: 32px;
+    align-items: center;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .hero-center { text-align: center; }
+  .hero-cards-left { display: flex; flex-direction: column; gap: 12px; padding-top: 40px; }
+  .hero-cards-right { display: flex; flex-direction: column; gap: 12px; padding-top: 80px; }
+
+  /* dot grid */
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0; pointer-events: none;
+    background-image: radial-gradient(circle, rgba(45,125,138,0.12) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, black 0%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, black 0%, transparent 80%);
+  }
+
+  .hero-glow { position: absolute; top: -60px; left: 50%; transform: translateX(-50%); width: 900px; height: 420px; pointer-events: none; background: radial-gradient(ellipse at center top, rgba(110,198,198,0.2) 0%, transparent 65%); }
+
+  .hero-badge { display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(45,125,138,0.2); background: rgba(45,125,138,0.06); border-radius: 99px; padding: 5px 14px 5px 6px; margin-bottom: 32px; position: relative; }
+  .badge-dot { width: 20px; height: 20px; border-radius: 50%; background: rgba(45,125,138,0.12); display: flex; align-items: center; justify-content: center; }
+  .badge-dot::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--primary); display: block; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.85)} }
+  .hero-badge span { font-size: 11px; font-weight: 600; color: var(--primary); }
+
+  .hero h1 { font-size: 64px; font-weight: 800; line-height: 1.05; letter-spacing: -2px; color: var(--text); margin-bottom: 22px; position: relative; }
+  .hero h1 em { font-style: normal; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero-sub { font-size: 17px; font-weight: 400; color: var(--text-muted); max-width: 500px; margin: 0 auto 40px; line-height: 1.7; position: relative; }
+
+  .hero-cta { display: flex; align-items: center; justify-content: center; gap: 12px; position: relative; }
+  .btn-primary { font-size: 14px; font-weight: 700; color: #fff; background: var(--gradient); border: none; cursor: pointer; padding: 13px 26px; border-radius: var(--radius); box-shadow: 0 4px 16px rgba(45,125,138,0.35); transition: opacity 0.15s; text-decoration: none; display: inline-flex; align-items: center; }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-ghost { font-size: 14px; font-weight: 600; color: var(--text-muted); background: #fff; cursor: pointer; border: 1px solid var(--border-strong); border-radius: var(--radius); padding: 12px 22px; transition: all 0.15s; box-shadow: var(--shadow-sm); text-decoration: none; display: inline-flex; align-items: center; }
+  .btn-ghost:hover { color: var(--text); border-color: var(--primary-light); }
+
+  .hero-proof { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 36px; position: relative; }
+  .avatar-stack { display: flex; }
+  .avatar { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #fff; margin-left: -7px; font-size: 10px; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: center; }
+  .avatar:first-child { margin-left: 0; }
+  .proof-text { font-size: 12px; font-weight: 500; color: var(--text-sub); }
+  .proof-text strong { color: var(--text-muted); font-weight: 600; }
+
+  /* ── FLOATING UI CARDS no hero ── */
+  .hero-visual {
+    position: relative; margin-top: 52px;
+    display: grid;
+    grid-template-columns: repeat(2, 230px);
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .float-card {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow-lg);
+    padding: 14px 16px; text-align: left;
+  }
+
+  /* cards */
+  .fc-search { animation: float-a 5s ease-in-out infinite; }
+  @keyframes float-a { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+  .fc-label { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-sub); margin-bottom: 10px; }
+  .fc-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .fc-key { font-size: 11px; font-weight: 500; color: var(--text-muted); }
+  .fc-val { font-size: 11px; font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; }
+  .fc-val.ok { color: #2D8A5E; }
+  .fc-tag-row { display: flex; gap: 5px; margin-top: 10px; }
+  .fc-tag { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 99px; }
+  .fc-tag.green { background: rgba(45,138,94,0.1); color: #2D8A5E; }
+  .fc-tag.teal { background: var(--primary-bg); color: var(--primary); }
+
+  /* card 2 */
+  .fc-calc { animation: float-b 5.5s ease-in-out infinite 0.8s; }
+  @keyframes float-b { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-9px)} }
+  .fc-calc-title { font-size: 11px; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .fc-calc-title span { width: 18px; height: 18px; border-radius: 5px; background: var(--primary-bg); display: flex; align-items: center; justify-content: center; }
+  .fc-calc-title span svg { width: 10px; height: 10px; stroke: var(--primary); fill: none; stroke-width: 2; }
+  .fc-amount { font-size: 22px; font-weight: 800; color: var(--text); font-family: 'JetBrains Mono', monospace; letter-spacing: -0.5px; }
+  .fc-amount-label { font-size: 10px; color: var(--text-sub); font-weight: 500; margin-top: 2px; margin-bottom: 10px; }
+  .fc-bar-track { height: 4px; background: var(--bg-3); border-radius: 99px; overflow: hidden; }
+  .fc-bar-fill { height: 100%; border-radius: 99px; background: var(--gradient); width: 72%; animation: bar-grow 2s ease-out 0.5s both; }
+  @keyframes bar-grow { from{width:0} to{width:72%} }
+
+  /* card 3 — Aurora */
+  .fc-ai { animation: float-c 6s ease-in-out infinite 1.5s; }
+  @keyframes float-c { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+
+  /* card 4 — consultor chat */
+  .fc-chat { animation: float-d 5.2s ease-in-out infinite 0.3s; }
+  @keyframes float-d { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  .fc-chat-header { display:flex; align-items:center; gap:8px; margin-bottom:10px; padding-bottom:9px; border-bottom:1px solid var(--border); }
+  .fc-chat-avatar { width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg,#2D7D8A,#6EC6C6); flex-shrink:0; font-size:11px; font-weight:700; color:#fff; display:flex; align-items:center; justify-content:center; }
+  .fc-chat-name { font-size:11px; font-weight:700; color:var(--text); line-height:1.2; }
+  .fc-chat-spec { font-size:10px; color:var(--text-sub); display:flex; align-items:center; gap:4px; }
+  .fc-bubble { border-radius:8px; padding:6px 10px; font-size:11px; line-height:1.5; margin-bottom:5px; }
+  .fc-bubble.user { background:var(--bg-2); color:var(--text-muted); border:1px solid var(--border); border-bottom-left-radius:2px; }
+  .fc-bubble.reply { background:var(--gradient); color:#fff; font-weight:500; border-bottom-right-radius:2px; }
+  .fc-ai-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .fc-ai-dot { width: 8px; height: 8px; border-radius: 50%; background: #4DB896; animation: pulse 1.5s infinite; }
+  .fc-ai-name { font-size: 11px; font-weight: 700; color: var(--text); }
+  .fc-ai-sub { font-size: 10px; color: var(--text-sub); }
+  .fc-ai-msg { font-size: 11px; color: var(--text-muted); line-height: 1.5; background: var(--bg-2); border-radius: var(--radius-sm); padding: 8px 10px; border: 1px solid var(--border); }
+  .fc-ai-msg strong { color: var(--primary); font-weight: 700; }
+  .fc-typing { display: flex; gap: 3px; margin-top: 8px; padding: 6px 10px; }
+  .fc-typing span { width: 5px; height: 5px; border-radius: 50%; background: var(--primary-light); animation: typing 1.2s infinite; }
+  .fc-typing span:nth-child(2) { animation-delay: 0.2s; }
+  .fc-typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typing { 0%,100%{opacity:0.3;transform:translateY(0)} 50%{opacity:1;transform:translateY(-3px)} }
+
+  /* linha de conexão decorativa */
+  .hero-visual-line {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 2px; height: 40px;
+    background: linear-gradient(180deg, var(--primary-light), transparent);
+  }
+
+  /* ── STATS ── */
+  .stats-bar {
+    display: flex; align-items: center; justify-content: center;
+    gap: 0; padding: 0; background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .stat-item {
+    flex: 1; max-width: 220px;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 28px 20px;
+    border-right: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-item:hover { background: var(--primary-bg); }
+  .stat-num {
+    font-size: 32px; font-weight: 800; color: var(--text);
+    font-family: 'JetBrains Mono', monospace; letter-spacing: -1px;
+    background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .stat-label { font-size: 12px; font-weight: 500; color: var(--text-sub); margin-top: 4px; }
+
+  /* ── SOCIAL PROOF ── */
+  .social-section { padding: 52px 0; overflow: hidden; background: var(--bg-2); border-bottom: 1px solid var(--border); }
+  .social-label { text-align: center; font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--text-sub); margin-bottom: 28px; }
+  .marquee-wrapper { position: relative; overflow: hidden; }
+  .marquee-wrapper::before, .marquee-wrapper::after { content: ''; position: absolute; top: 0; bottom: 0; width: 140px; z-index: 2; pointer-events: none; }
+  .marquee-wrapper::before { left: 0; background: linear-gradient(90deg, var(--bg-2), transparent); }
+  .marquee-wrapper::after { right: 0; background: linear-gradient(270deg, var(--bg-2), transparent); }
+  .marquee-track { display: flex; gap: 14px; width: max-content; animation: marquee-left 44s linear infinite; }
+  .marquee-track:hover { animation-play-state: paused; }
+  @keyframes marquee-left { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+  .tc { flex-shrink: 0; width: 288px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; box-shadow: var(--shadow-sm); transition: all 0.2s; }
+  .tc:hover { box-shadow: var(--shadow-md); border-color: var(--primary-light); }
+  .tc-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .tc-avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; font-size: 12px; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: center; }
+  .tc-name { font-size: 12px; font-weight: 700; color: var(--text); line-height: 1.2; }
+  .tc-role { font-size: 11px; font-weight: 500; color: var(--text-sub); }
+  .tc-text { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+  .tc-tag { display: inline-block; margin-top: 10px; background: var(--primary-bg); border: 1px solid rgba(45,125,138,0.15); border-radius: 99px; padding: 2px 9px; font-size: 10px; font-weight: 600; color: var(--primary); }
+
+  /* ── FEATURES ── */
+  .section { padding: 88px 64px; }
+  .section.alt { background: var(--bg-2); }
+  .section-divider { height: 1px; background: var(--border); }
+  .section-header { text-align: center; margin-bottom: 56px; }
+  .section-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--primary); margin-bottom: 12px; }
+  .section-title { font-size: 36px; font-weight: 800; letter-spacing: -0.8px; color: var(--text); margin-bottom: 14px; line-height: 1.15; }
+  .section-sub { font-size: 15px; color: var(--text-muted); max-width: 440px; margin: 0 auto; line-height: 1.7; }
+
+  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 1000px; margin: 0 auto; }
+
+  /* animated border card */
+  .feature-card {
+    background: var(--bg); border-radius: var(--radius); padding: 28px 24px;
+    box-shadow: var(--shadow-sm); transition: all 0.25s;
+    position: relative; overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .feature-card::before {
+    content: ''; position: absolute; inset: -1px; border-radius: var(--radius);
+    background: var(--gradient); opacity: 0;
+    transition: opacity 0.25s; z-index: 0;
+    padding: 1px;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+  }
+  .feature-card:hover::before { opacity: 1; }
+  .feature-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: transparent; }
+  .feature-card > * { position: relative; z-index: 1; }
+  .feature-card.span-2 { grid-column: span 2; }
+
+  /* scan line no card featured */
+  .feature-card.featured::after {
+    content: '';
+    position: absolute; top: -100%; left: 0; right: 0; height: 60%;
+    background: linear-gradient(180deg, transparent, rgba(110,198,198,0.06), transparent);
+    animation: scan 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes scan { 0%{top:-100%} 100%{top:200%} }
+
+  .feature-icon-wrap { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border); background: var(--primary-bg); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+  .feature-icon-wrap svg { width: 18px; height: 18px; stroke: var(--primary); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .feature-card h3 { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .feature-card p { font-size: 13px; color: var(--text-muted); line-height: 1.65; }
+  .feature-pill { display: inline-block; margin-top: 14px; background: var(--primary-bg); border: 1px solid rgba(45,125,138,0.2); border-radius: 99px; padding: 3px 10px; font-size: 10px; font-weight: 700; color: var(--primary); font-family: 'JetBrains Mono', monospace; }
+
+  /* ── HOW IT WORKS ── */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; max-width: 900px; margin: 0 auto; }
+  .step-number { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--primary); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; }
+  .step-number::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border-strong), transparent); }
+  .step h3 { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+  .step p { font-size: 13px; color: var(--text-muted); line-height: 1.65; }
+
+  /* ── PRICING ── */
+  .plans-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 900px; margin: 0 auto; }
+  .plan { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 24px; position: relative; box-shadow: var(--shadow-sm); transition: all 0.2s; }
+  .plan:hover { box-shadow: var(--shadow-md); }
+  .plan.highlight { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary), var(--shadow-md); }
+  .plan-badge { position: absolute; top: -11px; left: 50%; transform: translateX(-50%); background: var(--gradient); border-radius: 99px; padding: 3px 12px; font-size: 10px; font-weight: 700; color: #fff; white-space: nowrap; }
+  .plan-tier { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-sub); margin-bottom: 16px; font-family: 'JetBrains Mono', monospace; }
+  .plan-price-row { display: flex; align-items: baseline; gap: 4px; margin-bottom: 4px; }
+  .plan-price { font-size: 36px; font-weight: 800; color: var(--text); letter-spacing: -1px; font-family: 'JetBrains Mono', monospace; }
+  .plan-period { font-size: 13px; font-weight: 500; color: var(--text-muted); }
+  .plan-cycles { font-size: 12px; font-weight: 600; color: var(--primary); margin-bottom: 24px; font-family: 'JetBrains Mono', monospace; }
+  .plan-sep { height: 1px; background: var(--border); margin-bottom: 20px; }
+  .plan-features { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+  .plan-features li { font-size: 13px; color: var(--text-muted); display: flex; align-items: flex-start; gap: 10px; line-height: 1.4; }
+  .check-icon svg { width: 14px; height: 14px; stroke: var(--primary); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; margin-top: 1px; }
+  .plan-cta { display: block; width: 100%; padding: 11px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.15s; border: 1px solid var(--border-strong); background: transparent; color: var(--text-muted); text-decoration: none; text-align: center; }
+  .plan-cta:hover { color: var(--text); border-color: var(--primary); }
+  .plan-cta.primary { background: var(--gradient); border: none; color: #fff; box-shadow: 0 4px 16px rgba(45,125,138,0.3); }
+  .plan-cta.primary:hover { opacity: 0.9; }
+
+  /* ── CTA FINAL ── */
+  .cta-section {
+    padding: 100px 64px; text-align: center;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  /* grid decorativo no CTA */
+  .cta-section::before {
+    content: '';
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(ellipse 60% 80% at 50% 50%, black 0%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 60% 80% at 50% 50%, black 0%, transparent 75%);
+    opacity: 0.5;
+  }
+  .cta-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 300px; background: radial-gradient(ellipse, rgba(110,198,198,0.15) 0%, transparent 65%); pointer-events: none; }
+  .cta-section h2 { font-size: 44px; font-weight: 800; letter-spacing: -1.2px; color: var(--text); margin-bottom: 14px; position: relative; }
+  .cta-section p { font-size: 16px; color: var(--text-muted); margin-bottom: 36px; position: relative; }
+  .cta-section .btn-primary { font-size: 15px; padding: 15px 34px; position: relative; }
+
+  /* ── FOOTER ── */
+  footer { padding: 28px 64px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--bg); }
+  .footer-logo { display: flex; align-items: center; gap: 8px; }
+  .footer-logo-text { font-size: 13px; font-weight: 700; color: var(--text-sub); }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { font-size: 12px; color: var(--text-sub); text-decoration: none; transition: color 0.15s; }
+  .footer-links a:hover { color: var(--text-muted); }
+  .footer-copy { font-size: 12px; color: var(--text-sub); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3v18"/><path d="M5 21h14"/>
+        <path d="M6 7l-3 6h6L6 7z"/><path d="M18 7l-3 6h6l-3-6z"/>
+        <path d="M6 7h12"/>
+      </svg>
+    </div>
+    <span class="logo-text">CicloJus</span>
+  </a>
+  <div class="nav-links">
+    <a href="#funcionalidades">Funcionalidades</a>
+    <a href="#planos">Planos</a>
+    <a href="consultas.html">Central de Consultas</a>
+  </div>
+  <div class="nav-actions">
+    <a href="login.html" class="btn-nav-ghost">Entrar</a>
+    <a href="login.html" class="btn-nav-primary">Criar conta</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+
+  <div class="hero-layout">
+
+    <!-- Cards esquerda -->
+    <div class="hero-cards-left">
+
+      <div class="float-card fc-search">
+        <div class="fc-label">Consulta CNPJ</div>
+        <div class="fc-row"><span class="fc-key">Razao Social</span><span class="fc-val">Ramos &amp; Assoc.</span></div>
+        <div class="fc-row"><span class="fc-key">Situacao</span><span class="fc-val ok">Ativa</span></div>
+        <div class="fc-row"><span class="fc-key">Capital Social</span><span class="fc-val">R$ 250.000</span></div>
+        <div class="fc-row"><span class="fc-key">Socios</span><span class="fc-val">3 encontrados</span></div>
+        <div class="fc-tag-row">
+          <span class="fc-tag green">Sem restricoes</span>
+          <span class="fc-tag teal">CNPJ valido</span>
+        </div>
+      </div>
+
+      <div class="float-card fc-calc">
+        <div class="fc-calc-title">
+          <span><svg viewBox="0 0 12 12"><path d="M2 2h8v8H2z"/><path d="M4 6h4M6 4v4"/></svg></span>
+          Rescisao sem justa causa
+        </div>
+        <div class="fc-amount">R$ 18.742</div>
+        <div class="fc-amount-label">Valor total calculado</div>
+        <div class="fc-bar-track"><div class="fc-bar-fill"></div></div>
+      </div>
+
+    </div>
+
+    <!-- Centro — texto -->
+    <div class="hero-center">
+      <div class="hero-badge"><div class="badge-dot"></div><span>Plataforma jurídica com IA</span></div>
+      <h1>Advocacia mais<br>agil, <em>inteligente</em><br>e sem retrabalho.</h1>
+      <p class="hero-sub">Consultas automaticas, calculadoras jurídicas, transcricao de reunioes e IA especializada — tudo em uma unica plataforma.</p>
+      <div class="hero-cta">
+        <a href="login.html" class="btn-primary">Começar gratuitamente</a>
+        <a href="#funcionalidades" class="btn-ghost">Ver funcionalidades</a>
+      </div>
+      <div class="hero-proof">
+        <div class="avatar-stack">
+          <div class="avatar" style="background:linear-gradient(135deg,#2D7D8A,#6EC6C6)">R</div>
+          <div class="avatar" style="background:linear-gradient(135deg,#4DB896,#2D7D8A)">M</div>
+          <div class="avatar" style="background:linear-gradient(135deg,#4A90D9,#2D7D8A)">L</div>
+          <div class="avatar" style="background:linear-gradient(135deg,#6EC6C6,#4A90D9)">A</div>
+        </div>
+        <p class="proof-text">Usado por <strong>mais de 200 advogados</strong> em todo o Brasil</p>
+      </div>
+    </div>
+
+    <!-- Cards direita -->
+    <div class="hero-cards-right">
+
+      <div class="float-card fc-ai">
+        <div class="fc-ai-header">
+          <div class="fc-ai-dot"></div>
+          <div><div class="fc-ai-name">Aurora</div><div class="fc-ai-sub">Agenda Inteligente</div></div>
+        </div>
+        <div class="fc-ai-msg">Voce tem <strong>audiencia e reuniao as 15h</strong>. Posso ajudar em mais alguma coisa?</div>
+        <div class="fc-typing"><span></span><span></span><span></span></div>
+      </div>
+
+      <div class="float-card fc-chat">
+        <div class="fc-chat-header">
+          <div class="fc-chat-avatar">CP</div>
+          <div>
+            <div class="fc-chat-name">Consultor Prev.</div>
+            <div class="fc-chat-spec"><span style="width:5px;height:5px;border-radius:50%;background:#4DB896;display:inline-block;"></span> Online agora</div>
+          </div>
+        </div>
+        <div class="fc-bubble user">58 anos, 32 de contribuicao. Ja pode se aposentar?</div>
+        <div class="fc-bubble reply">Sim! Pela regra de transicao ja bateu os pontos. Calculo o beneficio agora.</div>
+        <div class="fc-typing" style="padding:2px 0 0;"><span></span><span></span><span></span></div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- linha decorativa -->
+  <div style="height:40px; display:flex; justify-content:center; align-items:flex-end;">
+    <div style="width:1px; height:32px; background:linear-gradient(180deg,var(--primary-light),transparent);"></div>
+  </div>
+
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-item"><div class="stat-num">200+</div><div class="stat-label">Advogados ativos</div></div>
+  <div class="stat-item"><div class="stat-num">15+</div><div class="stat-label">Calculadoras juridicas</div></div>
+  <div class="stat-item"><div class="stat-num">12</div><div class="stat-label">Tipos de consulta</div></div>
+  <div class="stat-item"><div class="stat-num">98%</div><div class="stat-label">Satisfacao dos usuarios</div></div>
+  <div class="stat-item"><div class="stat-num">&lt;2s</div><div class="stat-label">Tempo de resposta</div></div>
+</div>
+
+<!-- SOCIAL PROOF -->
+<section class="social-section">
+  <p class="social-label">Confiado por escritórios em todo o Brasil</p>
+  <div class="marquee-wrapper">
+    <div class="marquee-track">
+      <div class="tc"><div class="tc-header"><div class="tc-avatar" style="background:linear-gradient(135deg,#2D7D8A,#6EC6C6)">RS</div><div><div class="tc-name">Rafael Souza</div><div class="tc-role">Advogado Trabalhista · Sao Paulo</div></div></div><p class="tc-text">"Reduzi o tempo de levantamento de dados de horas para minutos. A consulta de CNPJ sozinha ja pagou o plano."</p><span class="tc-tag">Central de Consultas</span></div>
+      <div class="tc"><div class="tc-header"><div class="tc-avatar" style="background:linear-gradient(135deg,#4DB896,#2D7D8A)">MC</div><div><div class="tc-name">Marina Costa</div><div class="tc-role">Advogada Previdenciaria · Curitiba</div></div></div><p class="tc-text">"As calculadoras previdenciarias sao extremamente precisas. Uso o CicloJus em todas as pericias e audiencias."</p><span class="tc-tag">Calculadoras</span></div>
+      <div class="tc"><div class="tc-header"><div class="tc-avatar" style="background:linear-gradient(135deg,#4A90D9,#2D7D8A)">LP</div><div><div class="tc-name">Lucas Pimentel</div><div class="tc-role">Socio-fundador · LP Advocacia</div></div></div><p class="tc-text">"O CicloVoice mudou como conduzimos reunioes. Nao perdemos mais nenhum detalhe e as atas ficam prontas automaticamente."</p><span class="tc-tag">CicloVoice</span></div>
+      <div class="tc"><div class="tc-header"><div class="tc-avatar" style="background:linear-gradient(135deg,#8B5CF6,#4A90D9)">AF</div><div><div class="tc-name">Ana Ferreira</div><div class="tc-role">Advogada Civil · Rio de Janeiro</div></div></div><p class="tc-text">"A IARA me ajuda a pesquisar jurisprudencia em segundos. Economizo pelo menos 3 horas por semana so nessa funcao."</p><span class="tc-tag">Aurora — Agenda Inteligente</span></div>
+      <div class="tc"><div class="tc-header"><div class="tc-avatar" style="background:linear-gradient(135deg,#F0A04B,#E05C6A)">GM</div><div><div class="tc-name">Gustavo Melo</div><div class="tc-role">Advogado Bancario · Belo Horizonte</div></div></div><p class="tc-text">"Calculo de juros abusivos que levava 40 minutos agora leva 2. Os clientes ficam impressionados com a agilidade."</p><span class="tc-tag">Calculadoras</span></div>
+      <div class="tc"><div class="tc-header"><div class="tc-avatar" style="background:linear-gradient(135deg,#E05C6A,#F0A04B)">TO</div><div><div class="tc-name">Thiago Oliveira</div><div class="tc-role">Advogado Solo · Fortaleza</div></div></div><p class="tc-text">"Como advogado solo, o CicloJus funciona como se eu tivesse um time inteiro. Indispensavel para minha rotina."</p><span class="tc-tag">Plano Essencial</span></div>
+      <div class="tc"><div class="tc-header"><div class="tc-avatar" style="background:linear-gradient(135deg,#6EC6C6,#2D7D8A)">CS</div><div><div class="tc-name">Carla Santana</div><div class="tc-role">Advogada Trabalhista · Brasilia</div></div></div><p class="tc-text">"Plataforma completa e intuitiva. Uso todos os dias — consultas, calculos e ata de reuniao. Vale muito o investimento."</p><span class="tc-tag">Plano Profissional</span></div>
+      <div class="tc"><div class="tc-header"><div class="tc-avatar" style="background:linear-gradient(135deg,#4DB896,#6EC6C6)">FM</div><div><div class="tc-name">Felipe Monteiro</div><div class="tc-role">Advogado Tributarista · Recife</div></div></div><p class="tc-text">"Interface limpa, rapida e que realmente funciona. Nao e mais uma ferramenta que fica aberta mas nao usamos."</p><span class="tc-tag">Plano Profissional</span></div>
+      <!-- dup -->
+      <div class="tc"><div class="tc-header"><div class="tc-avatar" style="background:linear-gradient(135deg,#2D7D8A,#6EC6C6)">RS</div><div><div class="tc-name">Rafael Souza</div><div class="tc-role">Advogado Trabalhista · Sao Paulo</div></div></div><p class="tc-text">"Reduzi o tempo de levantamento de dados de horas para minutos. A consulta de CNPJ sozinha ja pagou o plano."</p><span class="tc-tag">Central de Consultas</span></div>
+      <div class="tc"><div class="tc-header"><div class="tc-avatar" style="background:linear-gradient(135deg,#4DB896,#2D7D8A)">MC</div><div><div class="tc-name">Marina Costa</div><div class="tc-role">Advogada Previdenciaria · Curitiba</div></div></div><p class="tc-text">"As calculadoras previdenciarias sao extremamente precisas. Uso o CicloJus em todas as pericias e audiencias."</p><span class="tc-tag">Calculadoras</span></div>
+      <div class="tc"><div class="tc-header"><div class="tc-avatar" style="background:linear-gradient(135deg,#4A90D9,#2D7D8A)">LP</div><div><div class="tc-name">Lucas Pimentel</div><div class="tc-role">Socio-fundador · LP Advocacia</div></div></div><p class="tc-text">"O CicloVoice mudou como conduzimos reunioes. Nao perdemos mais nenhum detalhe e as atas ficam prontas automaticamente."</p><span class="tc-tag">CicloVoice</span></div>
+      <div class="tc"><div class="tc-header"><div class="tc-avatar" style="background:linear-gradient(135deg,#8B5CF6,#4A90D9)">AF</div><div><div class="tc-name">Ana Ferreira</div><div class="tc-role">Advogada Civil · Rio de Janeiro</div></div></div><p class="tc-text">"A IARA me ajuda a pesquisar jurisprudencia em segundos. Economizo pelo menos 3 horas por semana so nessa funcao."</p><span class="tc-tag">Aurora — Agenda Inteligente</span></div>
+      <div class="tc"><div class="tc-header"><div class="tc-avatar" style="background:linear-gradient(135deg,#F0A04B,#E05C6A)">GM</div><div><div class="tc-name">Gustavo Melo</div><div class="tc-role">Advogado Bancario · Belo Horizonte</div></div></div><p class="tc-text">"Calculo de juros abusivos que levava 40 minutos agora leva 2. Os clientes ficam impressionados com a agilidade."</p><span class="tc-tag">Calculadoras</span></div>
+      <div class="tc"><div class="tc-header"><div class="tc-avatar" style="background:linear-gradient(135deg,#E05C6A,#F0A04B)">TO</div><div><div class="tc-name">Thiago Oliveira</div><div class="tc-role">Advogado Solo · Fortaleza</div></div></div><p class="tc-text">"Como advogado solo, o CicloJus funciona como se eu tivesse um time inteiro. Indispensavel para minha rotina."</p><span class="tc-tag">Plano Essencial</span></div>
+      <div class="tc"><div class="tc-header"><div class="tc-avatar" style="background:linear-gradient(135deg,#6EC6C6,#2D7D8A)">CS</div><div><div class="tc-name">Carla Santana</div><div class="tc-role">Advogada Trabalhista · Brasilia</div></div></div><p class="tc-text">"Plataforma completa e intuitiva. Uso todos os dias — consultas, calculos e ata de reuniao. Vale muito o investimento."</p><span class="tc-tag">Plano Profissional</span></div>
+      <div class="tc"><div class="tc-header"><div class="tc-avatar" style="background:linear-gradient(135deg,#4DB896,#6EC6C6)">FM</div><div><div class="tc-name">Felipe Monteiro</div><div class="tc-role">Advogado Tributarista · Recife</div></div></div><p class="tc-text">"Interface limpa, rapida e que realmente funciona. Nao e mais uma ferramenta que fica aberta mas nao usamos."</p><span class="tc-tag">Plano Profissional</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section alt" id="funcionalidades">
+  <div class="section-header">
+    <p class="section-eyebrow">Funcionalidades</p>
+    <h2 class="section-title">Tudo que seu escritorio precisa</h2>
+    <p class="section-sub">Do operacional ao estrategico — automatize o trabalho repetitivo e foque no que gera resultado.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card span-2 featured"><div class="feature-icon-wrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><h3>Central de Consultas</h3><p>Consultas de CPF, CNPJ, protestos, acoes judiciais, executivos e muito mais. Resultados completos em segundos, sem planilhas ou sistemas legados.</p><span class="feature-pill">// 12 tipos de consulta</span></div>
+    <div class="feature-card"><div class="feature-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/><path d="M18 2v4h4"/></svg></div><h3>Aurora — Agenda Inteligente</h3><p>Assistente inteligente que informa sua agenda, prepara resumos de casos e te lembra de audiencias e prazos automaticamente.</p></div>
+    <div class="feature-card"><div class="feature-icon-wrap"><svg viewBox="0 0 24 24"><path d="M9 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-3"/><path d="M9 15h3l8.5-8.5a1.5 1.5 0 0 0-3-3L9 12v3"/></svg></div><h3>Calculadoras Jurídicas</h3><p>Rescisao, pensao, juros, aluguel e revisao contratual. Mais de 15 calculadoras prontas para uso imediato.</p></div>
+    <div class="feature-card"><div class="feature-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg></div><h3>CicloVoice</h3><p>Transcreva reunioes e audiencias automaticamente. Gere atas e resumos com inteligencia artificial.</p></div>
+    <div class="feature-card"><div class="feature-icon-wrap"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><h3>Gestao de Clientes</h3><p>Perfis completos, historico de consultas e controle de casos por cliente em um painel unificado.</p></div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- CONSULTORES 24H -->
+<section class="section">
+  <div class="section-header">
+    <p class="section-eyebrow">Consultores Jurídicos</p>
+    <h2 class="section-title">Especialistas disponíveis<br>24 horas por dia</h2>
+    <p class="section-sub">Tire dúvidas, valide estratégias e obtenha pareceres com consultores especializados — a qualquer hora, sem agendamento.</p>
+  </div>
+
+  <div style="max-width:900px; margin: 0 auto;">
+
+    <!-- Badge 24h -->
+    <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:36px;">
+      <div style="display:flex; align-items:center; gap:7px; background:rgba(77,184,150,0.08); border:1px solid rgba(77,184,150,0.2); border-radius:99px; padding:6px 16px;">
+        <span style="width:7px;height:7px;border-radius:50%;background:#4DB896;display:inline-block;animation:pulse 1.5s infinite;flex-shrink:0;"></span>
+        <span style="font-size:12px;font-weight:700;color:#2D8A5E;">Consultores online agora</span>
+      </div>
+      <span style="font-size:12px;color:var(--text-sub);font-family:'JetBrains Mono',monospace;">24h / 7 dias</span>
+    </div>
+
+    <!-- Grid de especialidades -->
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:28px;">
+
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px 18px;box-shadow:var(--shadow-sm);transition:all 0.2s;cursor:default;" onmouseover="this.style.borderColor='var(--primary-light)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div style="width:34px;height:34px;border-radius:9px;background:var(--primary-bg);border:1px solid rgba(45,125,138,0.15);display:flex;align-items:center;justify-content:center;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D7D8A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+          </div>
+          <span style="width:7px;height:7px;border-radius:50%;background:#4DB896;animation:pulse 1.5s infinite;flex-shrink:0;"></span>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;">Trabalhista</div>
+        <div style="font-size:11px;color:var(--text-sub);">CLT, rescisoes, NR, horas extras</div>
+      </div>
+
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px 18px;box-shadow:var(--shadow-sm);transition:all 0.2s;cursor:default;" onmouseover="this.style.borderColor='var(--primary-light)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div style="width:34px;height:34px;border-radius:9px;background:var(--primary-bg);border:1px solid rgba(45,125,138,0.15);display:flex;align-items:center;justify-content:center;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D7D8A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <span style="width:7px;height:7px;border-radius:50%;background:#4DB896;animation:pulse 1.5s infinite;flex-shrink:0;"></span>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;">Previdenciario</div>
+        <div style="font-size:11px;color:var(--text-sub);">INSS, aposentadoria, beneficios</div>
+      </div>
+
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px 18px;box-shadow:var(--shadow-sm);transition:all 0.2s;cursor:default;" onmouseover="this.style.borderColor='var(--primary-light)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div style="width:34px;height:34px;border-radius:9px;background:rgba(224,92,106,0.08);border:1px solid rgba(224,92,106,0.15);display:flex;align-items:center;justify-content:center;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E05C6A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <span style="width:7px;height:7px;border-radius:50%;background:#4DB896;animation:pulse 1.5s infinite;flex-shrink:0;"></span>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;">Criminal</div>
+        <div style="font-size:11px;color:var(--text-sub);">Defesa, habeas corpus, flagrante</div>
+      </div>
+
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px 18px;box-shadow:var(--shadow-sm);transition:all 0.2s;cursor:default;" onmouseover="this.style.borderColor='var(--primary-light)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div style="width:34px;height:34px;border-radius:9px;background:rgba(74,144,217,0.08);border:1px solid rgba(74,144,217,0.15);display:flex;align-items:center;justify-content:center;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4A90D9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          </div>
+          <span style="width:7px;height:7px;border-radius:50%;background:#4DB896;animation:pulse 1.5s infinite;flex-shrink:0;"></span>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;">Consumidor</div>
+        <div style="font-size:11px;color:var(--text-sub);">CDC, danos morais, recall</div>
+      </div>
+
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px 18px;box-shadow:var(--shadow-sm);transition:all 0.2s;cursor:default;" onmouseover="this.style.borderColor='var(--primary-light)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div style="width:34px;height:34px;border-radius:9px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.15);display:flex;align-items:center;justify-content:center;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <span style="width:7px;height:7px;border-radius:50%;background:#4DB896;animation:pulse 1.5s infinite;flex-shrink:0;"></span>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;">Familia</div>
+        <div style="font-size:11px;color:var(--text-sub);">Divorcio, guarda, pensao, inventario</div>
+      </div>
+
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px 18px;box-shadow:var(--shadow-sm);transition:all 0.2s;cursor:default;" onmouseover="this.style.borderColor='var(--primary-light)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div style="width:34px;height:34px;border-radius:9px;background:rgba(240,160,75,0.08);border:1px solid rgba(240,160,75,0.15);display:flex;align-items:center;justify-content:center;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F0A04B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <span style="width:7px;height:7px;border-radius:50%;background:#4DB896;animation:pulse 1.5s infinite;flex-shrink:0;"></span>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;">Imobiliario</div>
+        <div style="font-size:11px;color:var(--text-sub);">Locacao, compra, usucapiao</div>
+      </div>
+
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px 18px;box-shadow:var(--shadow-sm);transition:all 0.2s;cursor:default;" onmouseover="this.style.borderColor='var(--primary-light)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div style="width:34px;height:34px;border-radius:9px;background:rgba(45,125,138,0.08);border:1px solid rgba(45,125,138,0.15);display:flex;align-items:center;justify-content:center;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D7D8A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <span style="width:7px;height:7px;border-radius:50%;background:#4DB896;animation:pulse 1.5s infinite;flex-shrink:0;"></span>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;">Tributario</div>
+        <div style="font-size:11px;color:var(--text-sub);">Planejamento fiscal, execucao</div>
+      </div>
+
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px 18px;box-shadow:var(--shadow-sm);transition:all 0.2s;cursor:default;" onmouseover="this.style.borderColor='var(--primary-light)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div style="width:34px;height:34px;border-radius:9px;background:rgba(77,184,150,0.08);border:1px solid rgba(77,184,150,0.15);display:flex;align-items:center;justify-content:center;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4DB896" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+          </div>
+          <span style="width:7px;height:7px;border-radius:50%;background:#4DB896;animation:pulse 1.5s infinite;flex-shrink:0;"></span>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;">Civil</div>
+        <div style="font-size:11px;color:var(--text-sub);">Contratos, responsabilidade, danos</div>
+      </div>
+
+    </div>
+
+    <!-- CTA consultores -->
+    <div style="text-align:center;">
+      <span style="font-size:12px;color:var(--text-sub);">E muito mais — Empresarial, Digital, Ambiental e outros</span>
+    </div>
+
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- HOW IT WORKS -->
+<section class="section">
+  <div class="section-header">
+    <p class="section-eyebrow">Como funciona</p>
+    <h2 class="section-title">Simples de usar.<br>Poderoso de verdade.</h2>
+    <p class="section-sub">Configure em minutos e comece a usar no mesmo dia.</p>
+  </div>
+  <div class="steps">
+    <div class="step"><div class="step-number">01</div><h3>Crie sua conta</h3><p>Cadastro em menos de 2 minutos. Sem cartao de credito necessario para comecar.</p></div>
+    <div class="step"><div class="step-number">02</div><h3>Escolha seu plano</h3><p>Planos por ciclos — creditos que nunca expiram. Compre uma vez, use quando precisar.</p></div>
+    <div class="step"><div class="step-number">03</div><h3>Use no seu fluxo</h3><p>Consultas, calculos, transcricoes e IA disponíveis imediatamente no painel central.</p></div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- PRICING -->
+<section class="section alt" id="planos">
+  <div class="section-header">
+    <p class="section-eyebrow">Planos</p>
+    <h2 class="section-title">Precos simples e transparentes</h2>
+    <p class="section-sub">Ciclos nunca expiram. Pague por uso, nao por assento.</p>
+  </div>
+  <div class="plans-grid">
+    <div class="plan"><div class="plan-tier">essencial</div><div class="plan-price-row"><span class="plan-price">R$67</span><span class="plan-period">,90/mes</span></div><div class="plan-cycles">48 ciclos / mes</div><div class="plan-sep"></div><ul class="plan-features"><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Central de Consultas</li><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Calculadoras juridicas</li><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>IARA — IA juridica</li><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Gestao de clientes</li></ul><a href="https://buy.stripe.com/4gM5kDegb3K35DrbwtcAo00" target="_blank" rel="noopener noreferrer" class="plan-cta">Assinar Essencial</a></div>
+    <div class="plan highlight"><div class="plan-badge">Mais popular</div><div class="plan-tier">profissional</div><div class="plan-price-row"><span class="plan-price">R$97</span><span class="plan-period">,90/mes</span></div><div class="plan-cycles">80 ciclos / mes</div><div class="plan-sep"></div><ul class="plan-features"><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Tudo do Essencial</li><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>CicloVoice</li><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Jurisprudencia avancada</li><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>PDF profissional</li></ul><a href="https://buy.stripe.com/8x28wPgojfsL0j77gdcAo01" target="_blank" rel="noopener noreferrer" class="plan-cta primary">Assinar Profissional</a></div>
+    <div class="plan"><div class="plan-tier">escritorio</div><div class="plan-price-row"><span class="plan-price">R$197</span><span class="plan-period">,90/mes</span></div><div class="plan-cycles">140 ciclos / mes</div><div class="plan-sep"></div><ul class="plan-features"><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Tudo do Profissional</li><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Multiplos usuarios</li><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Relatorios e analytics</li><li><span class="check-icon"><svg viewBox="0 0 14 14"><polyline points="2 7 5.5 10.5 12 3.5"/></svg></span>Suporte prioritario</li></ul><a href="https://buy.stripe.com/dRm5kDfkf3K30j7gQNcAo02" target="_blank" rel="noopener noreferrer" class="plan-cta">Assinar Escritório</a></div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-section">
+  <div class="cta-glow"></div>
+  <h2>Comece hoje.<br>Sem compromisso.</h2>
+  <p>Crie sua conta e experimente o CicloJus gratuitamente.</p>
+  <a href="login.html" class="btn-primary">Criar conta grátis</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <div class="logo-mark" style="width:24px;height:24px;border-radius:6px;box-shadow:none;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3v18"/><path d="M5 21h14"/>
+        <path d="M6 7l-3 6h6L6 7z"/><path d="M18 7l-3 6h6l-3-6z"/>
+        <path d="M6 7h12"/>
+      </svg>
+    </div>
+    <span class="footer-logo-text">CicloJus</span>
+  </div>
+  <div class="footer-links">
+    <a href="termos.html">Termos de Uso</a>
+    <a href="privacidade.html">Privacidade</a>
+    <a href="mailto:contato@ciclojus.com.br">Contato</a>
+  </div>
+  <p class="footer-copy">2026 CicloJus. Todos os direitos reservados.</p>
+</footer>
+
+</body>
+</html>
